@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}MediQueue Hospital{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="site-header">
+
+        <div class="navbar">
+
+            <!-- Hospital Logo and Name -->
+            <a href="/" class="brand">
+
+                <div class="brand-logo">
+                    <svg viewBox="0 0 64 64"
+                         xmlns="http://www.w3.org/2000/svg"
+                         aria-hidden="true">
+
+                        <path d="M32 56
+                                 C25 49 5 35 5 20
+                                 C5 7 22 3 32 16
+                                 C42 3 59 7 59 20
+                                 C59 35 39 49 32 56Z"
+                              fill="#0866F5"/>
+
+                        <path d="M10 32 H23 L29 23
+                                 L35 42 L41 29 H54"
+                              fill="none"
+                              stroke="white"
+                              stroke-width="4"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+
+                    </svg>
+                </div>
+
+                <div class="brand-text">
+                    <span class="brand-name">MediQueue</span>
+                    <span class="brand-tagline">
+                        Care Today, Health Tomorrow
+                    </span>
+                </div>
+
+            </a>
+
+            <!-- Website Menu -->
+            <nav class="main-nav" aria-label="Main navigation">
+
+                <a href="/"
+                   class="{{ 'on' if request.path == '/' else '' }}">
+                    Home
+                </a>
+
+                <a href="/doctors"
+                   class="{{ 'on' if request.path == '/doctors' else '' }}">
+                    Doctors
+                </a>
+
+                <a href="/patients"
+                   class="{{ 'on' if request.path == '/patients' else '' }}">
+                    Patients
+                </a>
+
+                <a href="/appointments"
+                   class="{{ 'on' if request.path == '/appointments' else '' }}">
+                    Appointments
+                </a>
+
+                <a href="/rooms"
+                   class="{{ 'on' if request.path == '/rooms' else '' }}">
+                    Rooms
+                </a>
+
+                <a href="/emergency"
+                   class="{{ 'on' if request.path == '/emergency' else '' }}">
+                    Emergency
+                </a>
+                <a href="/medicines"
+                class="{{ 'on' if request.path == '/medicines' else '' }}">
+                Medicines
+            </a>
+                <a href="/discharge"
+                class="{{ 'on' if request.path == '/discharge' else '' }}">
+                Discharge
+            </a>
+
+                <a href="/about"
+                   class="{{ 'on' if request.path == '/about' else '' }}">
+                    About
+                </a>
+
+                <a href="/contact"
+                   class="{{ 'on' if request.path == '/contact' else '' }}">
+                    Contact
+                </a>
+
+            </nav>
+
+            <!-- Quick Actions -->
+            <div class="nav-actions">
+
+                <a href="/bills" class="nav-login">
+                    Billing
+                </a>
+
+                <a href="/book" class="nav-register">
+                    + Book Appointment
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <!-- Website Footer -->
+    
+<!-- FOOTER -->
+<footer>
+<div class="footer-container">
+
+    <div class="footer-about">
+        <h2><span class="footer-plus">+</span> MediQueue Hospital</h2>
+        <p>
+            Quality healthcare, compassionate service,
+            and better patient care — all in one place.
+        </p>
+    </div>
+
+    <div class="footer-links">
+        <h3>Quick Links</h3>
+        <a href="/">Home</a>
+        <a href="/doctors">Our Doctors</a>
+        <a href="/patients">Patients</a>
+        <a href="/appointments">Appointments</a>
+        <a href="/about">About Us</a>
+    </div>
+
+    <div class="footer-links">
+        <h3>Hospital Services</h3>
+        <a href="/rooms">Room Management</a>
+        <a href="/emergency">Emergency Care</a>
+        <a href="/bills">Billing</a>
+        <a href="/discharge">Patient Discharge</a>
+    </div>
+
+
+<div class="footer-contact">
+    <h3>Contact &amp; Support</h3>
+
+    <p>Have questions? Get in touch with our hospital team.</p>
+
+    <div class="footer-contact-item">
+        <strong>Phone</strong>
+        <a href="tel:9876543210">9876543210</a>
+    </div>
+
+    <div class="footer-contact-item">
+        <strong>Email</strong>
+        <a href="mailto:help@mediqueue.com">help@mediqueue.com</a>
+    </div>
+
+    <div class="footer-contact-item">
+        <strong>Address</strong>
+        <span>Address to be updated</span>
+    </div>
+
+    <div class="footer-emergency">
+        <strong>Emergency Support</strong>
+        <span>Available 24/7</span>
+    </div>
+
+    <a href="/contact" class="footer-contact-link">
+        View Contact Page →
+    </a>
+</div>
+
+
+
+</div>
+
+<div class="footer-bottom">
+    <p>© 2026 MediQueue Hospital. All rights reserved.</p>
+    <span>Care • Trust • Health</span>
+</div>
+
+</footer>
+</body>
+</html>

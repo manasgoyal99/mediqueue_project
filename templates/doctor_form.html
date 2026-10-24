@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - MediQueue{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<div class="card">
+    <form method="POST">
+        <label>Doctor Name</label>
+        <input
+            type="text"
+            name="name"
+            placeholder="Enter Doctor Name"
+            value="{{ doctor.name if doctor else '' }}"
+            required
+        >
+
+        <label>Specialization</label>
+        <select name="specialization" required>
+            {% for t in types %}
+            <option
+                value="{{ t }}"
+                {% if doctor and t == doctor.specialization %}selected{% endif %}
+            >
+                {{ t }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label>Experience (years)</label>
+        <input
+            type="number"
+            name="experience"
+            min="0"
+            value="{{ doctor.experience if doctor else '' }}"
+            required
+        >
+
+        <label class="check">
+            <input
+                type="checkbox"
+                name="available"
+                {% if doctor is none or doctor.is_available %}checked{% endif %}
+            >
+            Available
+        </label>
+
+        <div class="actions">
+            <button type="submit" class="btn">Save</button>
+            <a href="/doctors" class="btn light">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,222 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home - MediQueue Hospital{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hospital-hero">
+    <div class="hero-content">
+        <span class="welcome-label">
+            WELCOME TO MEDIQUEUE HOSPITAL
+        </span>
+
+        <h1>Your Health,<br>Our Priority.</h1>
+
+        <p>
+            We provide quality healthcare services through experienced
+            doctors, modern medical facilities, and compassionate care
+            for you and your family.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/book" class="btn">
+                Book Appointment →
+            </a>
+
+            <a href="/doctors" class="btn hero-outline">
+                Find a Doctor
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section class="services-section">
+    <div class="section-heading">
+        <span class="section-label">OUR SERVICES</span>
+        <h2>Healthcare Services You Can Trust</h2>
+        <p>Access essential hospital services in one place.</p>
+    </div>
+
+    <div class="service-grid">
+
+        <a href="/doctors" class="service-card">
+            <div class="service-icon icon-blue">D</div>
+            <h3>Doctors</h3>
+            <p>Explore our medical professionals and their specializations.</p>
+            <span class="service-link">View Doctors →</span>
+        </a>
+
+        <a href="/appointments" class="service-card">
+            <div class="service-icon icon-green">A</div>
+            <h3>Appointments</h3>
+            <p>View and manage hospital appointments conveniently.</p>
+            <span class="service-link">View Appointments →</span>
+        </a>
+
+        <a href="/rooms" class="service-card">
+            <div class="service-icon icon-purple">R</div>
+            <h3>Hospital Rooms</h3>
+            <p>Check room availability and manage room allocation.</p>
+            <span class="service-link">View Rooms →</span>
+        </a>
+
+        <a href="/emergency" class="service-card">
+            <div class="service-icon icon-red">E</div>
+            <h3>Emergency Care</h3>
+            <p>Review emergency cases and patient priority levels.</p>
+            <span class="service-link">View Emergencies →</span>
+        </a>
+
+        <a href="/bills" class="service-card">
+            <div class="service-icon icon-orange">B</div>
+            <h3>Billing</h3>
+            <p>Review hospital bills and payment records.</p>
+            <span class="service-link">Manage Billing →</span>
+        </a>
+
+    </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section class="trust-section">
+    <div class="trust-description">
+        <span class="section-label">WHY CHOOSE US</span>
+        <h2>Your Trusted Healthcare Partner</h2>
+
+        <p>
+            MediQueue Hospital helps organize patient information,
+            doctor availability, appointments, hospital rooms,
+            emergency cases, and billing through one system.
+        </p>
+
+        <a href="/about" class="btn hero-outline">
+            Learn More About Us →
+        </a>
+    </div>
+
+    <div class="trust-stat">
+        <span class="trust-icon icon-blue">D</span>
+        <strong>{{ stats.doctors }}</strong>
+        <span>Expert Doctors</span>
+    </div>
+
+    <div class="trust-stat">
+        <span class="trust-icon icon-green">R</span>
+        <strong>{{ stats.occupied + stats.free }}</strong>
+        <span>Hospital Rooms</span>
+    </div>
+
+    <div class="trust-stat">
+        <span class="trust-icon icon-purple">P</span>
+        <strong>{{ stats.patients }}</strong>
+        <span>Registered Patients</span>
+    </div>
+
+    <div class="trust-stat">
+        <span class="trust-icon icon-orange">24</span>
+        <strong>24/7</strong>
+        <span>Emergency Support</span>
+    </div>
+</section>
+
+<!-- LIVE HOSPITAL SUMMARY -->
+<section class="dashboard-details">
+    <div class="section-heading">
+        <span class="section-label">LIVE DASHBOARD</span>
+        <h2>Hospital Overview</h2>
+        <p>Current hospital statistics at a glance.</p>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <b>{{ stats.patients }}</b>
+            <span>Total Patients</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.doctors }}</b>
+            <span>Total Doctors</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.available_doctors }}</b>
+            <span>Available Doctors</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.active_appointments }}</b>
+            <span>Active Appointments</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.emergency }}</b>
+            <span>Emergency Patients</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.occupied }} / {{ stats.free }}</b>
+            <span>Rooms Occupied / Free</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.pending_bills }}</b>
+            <span>Pending Bills</span>
+        </div>
+
+        <div class="stat">
+            <b>{{ stats.discharged }}</b>
+            <span>Discharged Patients</span>
+        </div>
+
+    </div>
+</section>
+
+<!-- EMERGENCY QUEUE -->
+<section class="card emergency-summary">
+    <h2>Emergency Queue — Top 3</h2>
+
+    {% if queue %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patient</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for e in queue[:3] %}
+            {% set cls = {1: 'no', 2: 'no', 3: 'wa', 4: 'ok'}[e.level] %}
+
+            <tr>
+                <td>{{ loop.index }}</td>
+
+                <td>
+                    {{ e.patient.patient_id }} -
+                    {{ e.patient.name }}
+                </td>
+
+                <td>
+                    <span class="tag {{ cls }}">
+                        Level {{ e.level }} - {{ e.label }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No emergency patients are currently waiting.</p>
+    {% endif %}
+
+    <a href="/emergency" class="btn small">
+        View Emergency Queue →
+    </a>
+</section>
+
+{% endblock %}

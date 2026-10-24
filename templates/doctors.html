@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors - MediQueue{% endblock %}
+
+{% block content %}
+    <h2>Doctors</h2>
+
+    <p><a href="/add_doctor" class="btn">+ Add New Doctor</a></p>
+
+    <div class="card">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Experience</th>
+                <th>Fee</th>
+                <th>Available</th>
+                <th>Action</th>
+            </tr>
+            {% for d in doctors %}
+            <tr>
+                <td>{{ d.doctor_id }}</td>
+                <td>{{ d.name }}</td>
+                <td>{{ d.specialization }}</td>
+                <td>{{ d.experience }} yrs</td>
+                <td>₹{{ d.calculate_consultation_fee() }}</td>
+                <td>
+                    {% if d.is_available %}
+                        <span class="tag ok">Yes</span>
+                    {% else %}
+                        <span class="tag no">No</span>
+                    {% endif %}
+                </td>
+                <td><a href="/edit/{{ d.doctor_id }}" class="btn small light">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,169 @@
+
+{% extends "base.html" %}
+
+{% block title %}Hospital Rooms - MediQueue Hospital{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <span class="section-label">ROOM MANAGEMENT</span>
+    <h1>Hospital Rooms</h1>
+    <p>Manage room assignments, availability, and room charges.</p>
+</section>
+
+{% if error %}
+<div class="card">
+    <p class="error">{{ error }}</p>
+</div>
+{% endif %}
+
+<!-- ASSIGN ROOM -->
+<div class="card">
+    <h2>Assign a Room</h2>
+    <p>Select a patient and an available hospital room.</p>
+
+    {% if patients %}
+    <form method="POST">
+
+        <label for="room_number">Select Room</label>
+        <select name="room_number" id="room_number" required>
+            {% for r in rooms %}
+            <option
+                value="{{ r.room_number }}"
+                {% if not r.is_available %}disabled{% endif %}
+            >
+                {{ r.room_number }} - {{ r.room_type }}
+                (₹{{ r.price_per_day }}/day)
+                {% if not r.is_available %} - Occupied{% endif %}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="patient_id">Select Patient</label>
+        <select name="patient_id" id="patient_id" required>
+            {% for p in patients %}
+            <option value="{{ p.patient_id }}">
+                {{ p.patient_id }} - {{ p.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <div class="actions">
+            <button type="submit" class="btn">Assign Room</button>
+        </div>
+
+    </form>
+    {% else %}
+    <p>No patients are registered yet. Register a patient before assigning a room.</p>
+    <a href="/register_patient" class="btn">Register Patient →</a>
+    {% endif %}
+</div>
+
+<!-- ALL ROOMS -->
+<div class="card">
+    <h2>All Hospital Rooms</h2>
+    <p>View room details and current occupancy status.</p>
+
+    {% if rooms %}
+    <table>
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Room Type</th>
+                <th>Price per Day</th>
+                <th>Status</th>
+                <th>Assigned Patient</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for r in rooms %}
+            <tr>
+                <td>{{ r.room_number }}</td>
+                <td>{{ r.room_type }}</td>
+                <td>₹{{ r.price_per_day }}</td>
+
+                <td>
+                    {% if r.is_available %}
+                    <span class="tag ok">Available</span>
+                    {% else %}
+                    <span class="tag no">Occupied</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if r.patient %}
+                    {{ r.patient.name }}
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if not r.is_available %}
+                    <form
+                        method="POST"
+                        action="/rooms/{{ r.room_number }}/release"
+                        class="inline"
+                    >
+                        <label for="days_{{ r.room_number }}">Days</label>
+                        <input
+                            type="number"
+                            id="days_{{ r.room_number }}"
+                            name="days"
+                            min="1"
+                            value="1"
+                            class="days"
+                            required
+                        >
+                        <button type="submit" class="btn small light">
+                            Release Room
+                        </button>
+                    </form>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hospital rooms are available in the system.</p>
+    {% endif %}
+</div>
+
+<!-- ROOM RELEASE HISTORY -->
+{% if release_log %}
+<div class="card">
+    <h2>Released Room Charges</h2>
+    <p>Summary of charges for previously released rooms.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Room Type</th>
+                <th>Patient</th>
+                <th>Days Used</th>
+                <th>Total Charge</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in release_log %}
+            <tr>
+                <td>{{ item.room }}</td>
+                <td>{{ item.type }}</td>
+                <td>{{ item.patient }}</td>
+                <td>{{ item.days }}</td>
+                <td>₹{{ item.charge }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

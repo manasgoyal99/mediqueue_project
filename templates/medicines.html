@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Records - MediQueue{% endblock %}
+
+{% block content %}
+<h2>Medicine Records</h2>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+<div class="card">
+    <h3>Add Medicine Record</h3>
+
+    {% if patients %}
+    <form method="POST">
+        <label>Select Patient</label>
+        <select name="patient_id" required>
+            {% for p in patients %}
+            <option value="{{ p.patient_id }}">
+                {{ p.patient_id }} - {{ p.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label>Medicine Name</label>
+        <input type="text" name="medicine_name" required>
+
+        <label>Quantity</label>
+        <input type="number" name="quantity" min="1" required>
+
+        <label>Price Per Unit </label>
+        <input type="number" name="price" min="0" step="0.01" required>
+
+        <button type="submit" class="btn">Save Medicine</button>
+    </form>
+    {% else %}
+    <p>Please register a patient first.</p>
+    {% endif %}
+</div>
+
+<br>
+
+<div class="card">
+    <h3>All Medicine Records</h3>
+
+    {% if medicine_records %}
+    <table>
+        <tr>
+            <th>Patient ID</th>
+            <th>Patient Name</th>
+            <th>Medicine</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+
+        {% for m in medicine_records %}
+        <tr>
+            <td>{{ m.patient_id }}</td>
+            <td>{{ m.patient_name }}</td>
+            <td>{{ m.medicine_name }}</td>
+            <td>{{ m.quantity }}</td>
+            <td>{{ "%.2f"|format(m.price) }}</td>
+            <td>{{ "%.2f"|format(m.total) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No medicine records have been added yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

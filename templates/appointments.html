@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments - MediQueue{% endblock %}
+
+{% block content %}
+    <h2>Appointments</h2>
+
+    <p><a href="/book" class="btn">+ Book Appointment</a></p>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <div class="card">
+        {% if appointments %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Fee</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for a in appointments %}
+            {% set cls = {'Scheduled': 'wa', 'Completed': 'ok', 'Cancelled': 'no', 'Emergency': 'no'}[a.status] %}
+            <tr>
+                <td>{{ a.appointment_id }}</td>
+                <td>{{ a.patient.name }}</td>
+                <td>{{ a.doctor.name }}</td>
+                <td>{{ a.date }}</td>
+                <td>{{ a.time }}</td>
+                <td>{{ a.appointment_type }}</td>
+                <td>₹{{ a.doctor.calculate_consultation_fee() }}</td>
+                <td><span class="tag {{ cls }}">{{ a.status }}</span></td>
+                <td>
+                    {% if a.status in ['Scheduled', 'Emergency'] %}
+                    <form method="POST" action="/appointments/{{ a.appointment_id }}/complete" class="inline">
+                        <button type="submit" class="btn small">Complete</button>
+                    </form>
+                    <form method="POST" action="/appointments/{{ a.appointment_id }}/cancel" class="inline">
+                        <button type="submit" class="btn small light">Cancel</button>
+                    </form>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No appointments scheduled yet.</p>
+        {% endif %}
+    </div>
+{% endblock %}

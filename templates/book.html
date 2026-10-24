@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - MediQueue{% endblock %}
+
+{% block content %}
+    <h2>Book Appointment</h2>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <div class="card">
+        {% if patients %}
+        <form method="POST">
+            <label>Patient</label>
+            <select name="patient_id" required>
+                {% for p in patients %}
+                <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Doctor</label>
+            <select name="doctor_id" required>
+                {% for d in doctors %}
+                <option value="{{ d.doctor_id }}">
+                    {{ d.name }} ({{ d.specialization }}){% if not d.is_available %} - Unavailable{% endif %}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Date</label>
+            <input type="date" name="date" required>
+
+            <label>Time</label>
+            <input type="time" name="time" required>
+
+            <label>Type</label>
+            <select name="appointment_type">
+                {% for t in types %}
+                <option>{{ t }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="actions">
+                <button type="submit" class="btn">Book</button>
+                <a href="/appointments" class="btn light">Cancel</a>
+            </div>
+        </form>
+        {% else %}
+        <p>Pehle koi patient register karo.</p>
+        <p><a href="/register_patient" class="btn">+ Register Patient</a></p>
+        {% endif %}
+    </div>
+{% endblock %}

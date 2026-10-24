@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - MediQueue{% endblock %}
+
+{% block content %}
+    <h2>Patients</h2>
+
+    <p><a href="/register_patient" class="btn">+ Register Patient</a></p>
+
+    <div class="card">
+        {% if patients %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>Disease</th>
+                <th>Blood Group</th>
+            </tr>
+            {% for p in patients %}
+            <tr>
+                <td>{{ p.patient_id }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.age }}</td>
+                <td>{{ p.phone }}</td>
+                <td>{{ p.disease }}</td>
+                <td>{{ p.blood_group }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No patients registered yet.</p>
+        {% endif %}
+    </div>
+{% endblock %}

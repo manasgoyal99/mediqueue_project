@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Register Patient - MediQueue{% endblock %}
+
+{% block content %}
+    <h2>Register Patient</h2>
+
+    <div class="card">
+        <form method="POST">
+            <label>Naam</label>
+            <input type="text" name="name" required>
+
+            <label>Age</label>
+            <input type="number" name="age" min="0" max="120" required>
+
+            <label>Phone</label>
+            <input type="text" name="phone" required>
+
+            <label>Email</label>
+            <input type="email" name="email" required>
+
+            <label>Disease</label>
+            <input type="text" name="disease" required>
+
+            <label>Blood Group</label>
+            <select name="blood_group">
+                {% for b in blood_groups %}
+                <option>{{ b }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="actions">
+                <button type="submit" class="btn">Register</button>
+                <a href="/patients" class="btn light">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

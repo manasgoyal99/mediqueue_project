@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %} Emergency - MediQueue {% endblock %}
+{% block content %}
+<h2>Emergency Queue</h2>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+<div class="card">
+    {% if patients %}
+    <form method="POST">
+        <label>Patient</label>
+        <select name="patient_id" required>
+            {% for p in patients %}
+            <option value="{{ p.patient_id }}">{{ p.patient_id }} - {{ p.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Priority Level</label>
+        <select name="level">
+            {% for num, name in levels.items() %}
+            <option value="{{ num }}">Level {{ num }} - {{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="actions">
+            <button type="submit" class="btn">Add to Queue</button>
+        </div>
+    </form>
+    {% else %}
+    <p>Please register a patient first.</p>
+    <p><a href="/register_patient" class="btn">+ Register Patient</a></p>
+    {% endif %}
+</div>
+
+<br>
+
+<div class="card">
+    <h3>Treatment Order</h3>
+    {% if queue %}
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Disease</th>
+            <th>Priority</th>
+        </tr>
+        {% for e in queue %}
+        {% set cls = {1: 'no', 2: 'no', 3: 'wa', 4: 'ok'}[e.level] %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ e.patient.patient_id }}</td>
+            <td>{{ e.patient.name }}</td>
+            <td>{{ e.patient.disease }}</td>
+            <td><span class="tag {{ cls }}">Level {{ e.level }} - {{ e.label }}</span></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form method="POST" action="/emergency/treat" class="inline">
+        <button type="submit" class="btn">Treat Next Patient</button>
+    </form>
+    {% else %}
+    <p>The queue is currently empty.</p>
+    {% endif %}
+</div>
+
+{% if treated %}
+<br>
+<div class="card">
+    <h3>Treated</h3>
+    <table>
+        <tr>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Priority</th>
+        </tr>
+        {% for e in treated %}
+        <tr>
+            <td>{{ e.patient.patient_id }}</td>
+            <td>{{ e.patient.name }}</td>
+            <td>Level {{ e.level }} - {{ e.label }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% endblock %}

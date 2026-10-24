@@ -1,0 +1,165 @@
+
+{% extends "base.html" %}
+
+{% block title %}Bills - MediQueue{% endblock %}
+
+{% block content %}
+<h2>Billing & Payments</h2>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+<div class="card">
+    <h3>Generate Patient Bill</h3>
+
+    {% if patients %}
+    <form method="POST" id="billForm">
+
+        <label>Select Patient</label>
+        <select name="patient_id" id="patientSelect" required>
+            {% for p in patients %}
+            <option
+                value="{{ p.patient_id }}"
+                data-name="{{ p.name }}"
+                data-age="{{ p.age }}"
+                data-phone="{{ p.phone }}"
+                data-email="{{ p.email }}"
+                data-disease="{{ p.disease }}"
+                data-blood="{{ p.blood_group }}">
+                {{ p.patient_id }} - {{ p.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <div class="card" id="patientDetails" style="margin-top:15px;">
+            <h3>Patient Record</h3>
+            <p><b>Patient ID:</b> <span id="detailId"></span></p>
+            <p><b>Name:</b> <span id="detailName"></span></p>
+            <p><b>Age:</b> <span id="detailAge"></span></p>
+            <p><b>Phone:</b> <span id="detailPhone"></span></p>
+            <p><b>Email:</b> <span id="detailEmail"></span></p>
+            <p><b>Disease:</b> <span id="detailDisease"></span></p>
+            <p><b>Blood Group:</b> <span id="detailBlood"></span></p>
+        </div>
+        
+        <label>Medicine Charges (₹)</label>
+        <input type="number" name="medicine"
+               min="0" step="0.01" value="0" required>
+
+        <label>Emergency Charges (₹)</label>
+        <input type="number" name="emergency"
+               min="0" step="0.01" value="0" required>
+
+            <p>No bills have been generated yet.</p>
+
+        <button type="submit" class="btn">Generate Bill</button>
+    </form>
+
+    {% else %}
+    <p>Pehle patient register karo.</p>
+    <a href="/register_patient" class="btn">Register Patient</a>
+    {% endif %}
+</div>
+
+<script>
+const patientSelect = document.getElementById("patientSelect");
+
+function showPatientDetails() {
+    if (!patientSelect) return;
+
+    const option = patientSelect.selectedOptions[0];
+    if (!option) return;
+
+    document.getElementById("detailId").textContent =
+        option.value;
+    document.getElementById("detailName").textContent =
+        option.dataset.name || "-";
+    document.getElementById("detailAge").textContent =
+        option.dataset.age || "-";
+    document.getElementById("detailPhone").textContent =
+        option.dataset.phone || "-";
+    document.getElementById("detailEmail").textContent =
+        option.dataset.email || "-";
+    document.getElementById("detailDisease").textContent =
+        option.dataset.disease || "-";
+    document.getElementById("detailBlood").textContent =
+        option.dataset.blood || "-";
+}
+
+if (patientSelect) {
+    patientSelect.addEventListener("change", showPatientDetails);
+    showPatientDetails();
+}
+</script>
+
+<br>
+
+<div class="card">
+    <h3>All Bills</h3>
+
+    {% if bills %}
+    <table>
+        <tr>
+            <th>Bill ID</th>
+            <th>Patient</th>
+            <th>Consultation</th>
+            <th>Medicine</th>
+            <th>Room</th>
+            <th>Emergency</th>
+            <th>Total</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Payment</th>
+        </tr>
+
+        {% for b in bills %}
+        {% set cls = {
+            'PAID': 'ok',
+            'PARTIALLY PAID': 'wa',
+            'PENDING': 'no'
+        }.get(b.payment_status, 'no') %}
+
+        <tr>
+            <td>{{ b.bill_id }}</td>
+            <td>{{ b.patient.name }}</td>
+            <td>₹{{ "%.2f"|format(b.consultation) }}</td>
+            <td>₹{{ "%.2f"|format(b.medicine) }}</td>
+            <td>₹{{ "%.2f"|format(b.room) }}</td>
+            <td>₹{{ "%.2f"|format(b.emergency) }}</td>
+            <td><b>₹{{ "%.2f"|format(b.final_amount()) }}</b></td>
+            <td>₹{{ "%.2f"|format(b.paid) }}</td>
+            <td>₹{{ "%.2f"|format(b.balance()) }}</td>
+            <td>
+                <span class="tag {{ cls }}">
+                    {{ b.payment_status }}
+                </span>
+            </td>
+            <td>
+                {% if b.balance() > 0 %}
+                <form method="POST"
+                      action="/bills/{{ b.bill_id }}/pay"
+                      class="inline">
+                    <input type="number"
+                           name="amount"
+                           min="0.01"
+                           max="{{ b.balance() }}"
+                           step="0.01"
+                           value="{{ b.balance() }}"
+                           required>
+                    <button type="submit" class="btn small">Pay</button>
+                </form>
+                {% else %}
+                Paid
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% else %}
+    <p>Bill is not generated now.</p>
+    {% endif %}
+</div>
+{% endblock %}

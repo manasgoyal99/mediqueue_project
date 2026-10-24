@@ -1,0 +1,140 @@
+
+{% extends "base.html" %}
+
+{% block title %}Patient Discharge - MediQueue{% endblock %}
+
+{% block content %}
+<h2>Patient Discharge</h2>
+
+{% if result %}
+    {% if result.ok %}
+    <p class="success">
+        {{ result.name }}: Patient discharged successfully.
+    </p>
+    {% else %}
+    <div class="error">
+        <p><b>Patient cannot be discharged.</b></p>
+        {% for reason in result.reasons %}
+        <p>{{ reason }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endif %}
+
+<div class="card">
+    <h3>Discharge Patient</h3>
+
+    {% if patients %}
+    <form method="POST" id="dischargeForm">
+        <label>Select Patient</label>
+
+        <select name="patient_id" id="dischargePatient" required>
+            {% for p in patients %}
+            <option value="{{ p.patient_id }}"
+                    data-name="{{ p.name }}">
+                {{ p.patient_id }} - {{ p.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <div class="card" style="margin-top:15px;">
+            <h3>Bill Status</h3>
+            <p><b>Patient:</b> <span id="billPatientName">-</span></p>
+            <p><b>Bill ID:</b> <span id="billId">-</span></p>
+            <p><b>Total Amount:</b> ₹<span id="billTotal">0.00</span></p>
+            <p><b>Paid Amount:</b> ₹<span id="billPaid">0.00</span></p>
+            <p><b>Remaining Balance:</b> ₹<span id="billBalance">0.00</span></p>
+            <p><b>Payment Status:</b> <span id="billStatus">-</span></p>
+        </div>
+
+        <label class="check">
+            <input type="checkbox" name="treatment">
+            Treatment Completed
+        </label>
+
+        <label class="check">
+            <input type="checkbox" name="approval">
+            Doctor Approval
+        </label>
+
+        <button type="submit" class="btn">Discharge Patient</button>
+    </form>
+    {% else %}
+    <p>Pehle patient register karo.</p>
+    <a href="/register_patient" class="btn">Register Patient</a>
+    {% endif %}
+</div>
+
+{% if discharged %}
+<br>
+<div class="card">
+    <h3>Discharged Patients</h3>
+    <table>
+        <tr>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+
+        {% for p in discharged %}
+        <tr>
+            <td>{{ p.patient_id }}</td>
+            <td>{{ p.name }}</td>
+            <td><span class="tag ok">DISCHARGED</span></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<script>
+const dischargePatient = document.getElementById("dischargePatient");
+
+const patientBills = [
+    {% for b in bills %}
+    {
+        patientId: {{ b.patient.patient_id | tojson }},
+        billId: {{ b.bill_id | tojson }},
+        total: {{ b.final_amount() | tojson }},
+        paid: {{ b.paid | tojson }},
+        balance: {{ b.balance() | tojson }},
+        status: {{ b.payment_status | tojson }}
+    },
+    {% endfor %}
+];
+
+function showBillStatus() {
+    if (!dischargePatient) return;
+
+    const option = dischargePatient.selectedOptions[0];
+    if (!option) return;
+
+    document.getElementById("billPatientName").textContent =
+        option.dataset.name || "-";
+
+    const bill = patientBills.find(
+        b => b.patientId === dischargePatient.value
+    );
+
+    document.getElementById("billId").textContent =
+        bill ? bill.billId : "Not generated";
+
+    document.getElementById("billTotal").textContent =
+        bill ? Number(bill.total).toFixed(2) : "0.00";
+
+    document.getElementById("billPaid").textContent =
+        bill ? Number(bill.paid).toFixed(2) : "0.00";
+
+    document.getElementById("billBalance").textContent =
+        bill ? Number(bill.balance).toFixed(2) : "0.00";
+
+    document.getElementById("billStatus").textContent =
+        bill ? bill.status : "Bill Pending";
+}
+
+if (dischargePatient) {
+    dischargePatient.addEventListener("change", showBillStatus);
+    showBillStatus();
+}
+</script>
+{% endblock %}
