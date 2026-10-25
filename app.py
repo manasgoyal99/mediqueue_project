@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect
 from doctors import GeneralPhysician, Cardiologist, Neurologist, Surgeon
 from patients import Patient
